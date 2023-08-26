@@ -1,0 +1,26 @@
+<div class="container text-center mt-4">
+
+<div class="pagination justify-content-center">
+  <%= will_paginate @annotated_images %>
+</div>
+  <ul class="list-group">
+    <% @annotated_images.each do |annotated_image| %>
+      <li class="list-group-item">
+        <% if annotated_image.image.attached? %>
+          <div class="row">
+            <div class="col-md-6 mt-1 text-left">
+              <%= link_to annotated_image.name , annotated_image_path(annotated_image)%>
+            </div>
+            <div class="col-md-6 text-right">
+              <%= link_to 'Edit', edit_annotated_image_path(annotated_image), class: "btn btn-primary mr-2" %>
+              <%= link_to 'Delete', annotated_image_path(annotated_image), method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger" %>
+            </div>
+          </div>
+        <%end%>
+      </li>
+    <% end %>
+
+
+  </ul>
+</div>
+

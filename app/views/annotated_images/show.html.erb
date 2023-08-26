@@ -1,0 +1,20 @@
+<div class="container-fluid">
+  <div class="image-container vh-100 d-flex justify-content-center align-items-center ">
+    <div class="image-wrapper">
+      <%= link_to 'Back', annotated_images_path, class: "btn btn-dark back-button" %>
+      <div class="action-buttons">
+        <%= link_to 'Edit', edit_annotated_image_path(@image), class: "btn btn-primary mr-2" %>
+        <%= link_to 'Delete', annotated_image_path(@image), method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger" %>
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#annotateModal">
+          Annotate
+        </button>
+      </div>
+      <img class="image" id="previewImage" src="<%= url_for(@image.image)  %>" alt="Image">
+      <%= link_to 'prev',  annotated_image_path(@prev_image), class: "btn btn-secondary navigation-buttons-left" if @prev_image %>
+      <%= link_to 'next',  annotated_image_path(@next_image), class: "btn btn-secondary navigation-buttons-right"if @next_image %>
+    </div>
+  </div>
+</div>
+
+<%= render partial: 'annotated_images/popup' %>
+

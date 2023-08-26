@@ -1,0 +1,43 @@
+@import 'bootstrap/dist/css/bootstrap';
+
+ 
+
+#home_container{
+    margin-top: 100px;
+}
+
+.image-container {
+    text-align: center;
+    position: relative;
+  }
+
+  .image {
+    width: 100%;
+    max-width: 600px; /* Adjust the maximum width as needed */
+    display: block;
+    margin: 0 auto;
+  }
+  .action-buttons {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+  .back-button{
+    position: absolute;
+    top: 10px;
+    left: 5%;
+    transform: translateX(-50%);
+    z-index: 1;
+  }
+  .navigation-buttons-left {
+    position: absolute;
+    top: 50%;
+    left: 0;
+  }
+  .navigation-buttons-right {
+    position: absolute;
+    top: 50%;
+    right: 0;
+  }

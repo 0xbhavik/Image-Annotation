@@ -1,3 +1,8 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  resources :annotated_images do
+    member do
+      post 'update_annotation'
+    end
+  end
+  root 'welcome#home'
 end
