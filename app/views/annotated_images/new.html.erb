@@ -9,27 +9,39 @@
       <%= form.file_field :image, class: "form-control-file" , id: "image_upload" %>
     </div>
     <div class="form-group annotation-section" style="display: none;">
+      <h4>Add Annotations for Image</h4>
       <div class="key-value-pairs">
+        <div class="key-value-pair form-row">
+          <div class="col">
+            <%= form.text_field "custom_keys[]",  class: "form-control key", placeholder: 'Key' %>
+          </div>
+          <div class="col">
+            <%= form.text_field "custom_values[]",  class: "form-control value", placeholder: 'Value' %>
+          </div>
+          <div class="col-auto">
+            <button type="button" class="btn btn-sm btn-info add-key-value">Add</button>
+          </div>
+          <div class="col-auto">
+            <button type="button" class="btn btn-sm btn-danger remove-key-value">Remove</button>
+          </div>
+        </div>
       </div>
-      <button type="button" class="btn btn-sm btn-success add-key-value mt-10">Add annotation</button>
-    </div>
-    <div class="form-group">
-      <%= form.submit "Submit", class: "btn btn-primary" %>
-    </div>
-  <% end %>
-</div>
+      <div class="form-group">
+        <%= form.submit "Submit", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+  <script>
+    $(document).ready(function() {
+      var imageUpload = $('#image_upload');
+      var annotationSection = $('.annotation-section');
 
-<script>
-  $(document).ready(function() {
-    var imageUpload = $('#image_upload');
-    var annotationSection = $('.annotation-section');
-
-    imageUpload.change(function() {
-      if (imageUpload[0].files.length > 0) {
-        annotationSection.show();
-      } else {
-        annotationSection.hide();
-      }
+      imageUpload.change(function() {
+        if (imageUpload[0].files.length > 0) {
+          annotationSection.show();
+        } else {
+          annotationSection.hide();
+        }
+      });
     });
-  });
-</script>
+  </script>

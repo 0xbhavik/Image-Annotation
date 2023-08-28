@@ -213,8 +213,6 @@ GEM
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
     will_paginate (4.0.0)
-    will_paginate-bootstrap4 (0.0.1)
-      will_paginate
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.6.11)
@@ -242,7 +240,6 @@ DEPENDENCIES
   webdrivers
   webpacker (~> 4.0)
   will_paginate
-  will_paginate-bootstrap4
 
 RUBY VERSION
    ruby 2.7.2p137

@@ -3,7 +3,7 @@ class AnnotatedImagesController < ApplicationController
   before_action :set_prev_and_next_image, only: [:show]
 
   def index
-    @annotated_images = AnnotatedImage.paginate(page: params[:page], per_page: 2)
+    @annotated_images = AnnotatedImage.paginate(page: params[:page], per_page: 10)
   end
 
   def create
@@ -15,7 +15,7 @@ class AnnotatedImagesController < ApplicationController
     elsif !image_valid?
       flash[:alert] = 'Only image files (jpg, jpeg, png, gif) are allowed'
       redirect_to new_annotated_image_path
-    elsif !valid_annotations? @image.annotations
+    elsif !AnnotatedImage.valid_annotations? @image.annotations
       flash[:alert] = 'annotations are not valid'
       redirect_to new_annotated_image_path
     elsif @image.save
@@ -25,6 +25,7 @@ class AnnotatedImagesController < ApplicationController
       render :new
     end
   end
+  
 
   def show; end
 
@@ -32,10 +33,11 @@ class AnnotatedImagesController < ApplicationController
 
   def update
     @image.annotations = set_annotation
+    @image.image = params[:image] if params[:image]
     if !valid_annotations? @image.annotations
       flash[:alert] = 'annotations are not valid'
       redirect_to edit_annotated_image_path(@image)
-    elsif @image.save
+    elsif @image.update(image_params)
       flash[:notice] = 'image is updated successfully.'
       redirect_to annotated_images_path
     else
@@ -51,16 +53,18 @@ class AnnotatedImagesController < ApplicationController
 
   def update_annotation
     @image.annotations = set_annotation
-    if !valid_annotations? @image.annotations
-      flash[:alert] = 'annotations are not valid'
-      redirect_to edit_annotated_images_path(@image)
+    if !AnnotatedImage.valid_annotations? @image.annotations
+      respond_to do |format|
+        format.js { flash.now[:alert] = 'Failed to update annotations.' }
+      end
     elsif @image.save
       respond_to do |format|
-      format.js { render partial: 'annotated_images/update_annotation' }
+        format.js { flash.now[:notice] = 'Annotations updated successfully.' }
       end
     else
-      flash[:alert] = 'not updated'
-      redirect_to edit_annotated_images_path
+      respond_to do |format|
+        format.js { flash.now[:alert] = 'Failed to update annotations.' }
+      end
     end
   end
 
@@ -82,9 +86,14 @@ class AnnotatedImagesController < ApplicationController
   end
 
   def set_annotation
-    custom_keys = params[:custom_keys]
-    custom_values = params[:custom_values]
-    custom_keys.zip(custom_values).to_h
+    if params[:custom_keys] && params[:custom_values] && !params[:custom_keys].empty?
+      custom_keys = params[:custom_keys]
+      custom_values = params[:custom_values]
+      custom_keys.zip(custom_values).to_h
+    else
+      annotations = {}
+      annotations
+    end
   end
 
   def image_valid?
@@ -92,10 +101,5 @@ class AnnotatedImagesController < ApplicationController
     @image.image.content_type.in?(allowed_types)
   end
 
-  def valid_annotations?(annotations)
-    annotations.each do |key, value|
-      return false if (key.empty? && !value.empty?) || (value.empty? && !key.empty?)
-    end
-    true
-  end
+
 end

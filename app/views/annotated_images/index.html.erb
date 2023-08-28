@@ -3,13 +3,14 @@
 <div class="pagination justify-content-center">
   <%= will_paginate @annotated_images %>
 </div>
+
   <ul class="list-group">
     <% @annotated_images.each do |annotated_image| %>
       <li class="list-group-item">
         <% if annotated_image.image.attached? %>
           <div class="row">
             <div class="col-md-6 mt-1 text-left">
-              <%= link_to annotated_image.name , annotated_image_path(annotated_image)%>
+              <%= link_to annotated_image.image.filename , annotated_image_path(annotated_image),  data: { turbolinks: false }%>
             </div>
             <div class="col-md-6 text-right">
               <%= link_to 'Edit', edit_annotated_image_path(annotated_image), class: "btn btn-primary mr-2" %>

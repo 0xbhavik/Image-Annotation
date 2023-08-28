@@ -3,47 +3,14 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="annotateModalLabel">Annotate Image</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" id= "close_modal" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class= "form-body">
         <div class="modal-body">
-          <%= form_with(model: @annotated_image, url: update_annotation_annotated_image_path(@image),method: :post,data: { remote: true }) do |form| %>
-            <div class="key-value-pairs" >
-              <%@image.annotations.each do |key,value| %>
-                <div class="key-value-pair form-row">
-                  <div class="col">
-                    <%= form.text_field "custom_keys[]", value: key, class: "form-control", placeholder: 'Key' %>
-                  </div>
-                  <div class="col">
-                    <%= form.text_field "custom_values[]", value: value , class: "form-control", placeholder: 'Value' %>
-                  </div>
-                  <div class="col-auto">
-                    <button type="button" class="btn btn-sm btn-danger remove-key-value">Remove</button>
-                  </div>
-                </div>
-              <% end %>
-              <div class="key-value-pair form-row">
-                <div class="col">
-                  <%= form.text_field "custom_keys[]", class: "form-control", placeholder: 'Key' %>
-                </div>
-                <div class="col">
-                  <%= form.text_field "custom_values[]", class: "form-control", placeholder: 'Value' %>
-                </div>
-                <div class="col-auto">
-                  <button type="button" class="btn btn-sm btn-danger remove-key-value">Remove</button>
-                </div>
-              </div>
-            </div>
-            <button type="button" class="btn btn-sm btn-success add-key-value mt-10">Add More</button>
-          </div>
-          <%= form.submit "Submit", class: "btn btn-primary" %>
-        <% end %>
+          <%= render partial: 'annotated_images/annotate_form' %>
+        </div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-    </div>
   </div>
-</div>
