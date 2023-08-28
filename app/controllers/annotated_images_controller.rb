@@ -12,7 +12,7 @@ class AnnotatedImagesController < ApplicationController
     if !@image.image.attached?
       flash[:alert] = 'image is not attached'
       redirect_to new_annotated_image_path
-    elsif !image_valid?
+    elsif !AnnotatedImage.image_valid? @image
       flash[:alert] = 'Only image files (jpg, jpeg, png, gif) are allowed'
       redirect_to new_annotated_image_path
     elsif !AnnotatedImage.valid_annotations? @image.annotations
@@ -55,7 +55,7 @@ class AnnotatedImagesController < ApplicationController
     @image.annotations = set_annotation
     if !AnnotatedImage.valid_annotations? @image.annotations
       respond_to do |format|
-        format.js { flash.now[:alert] = 'Failed to update annotations.' }
+        format.js { flash.now[:alert] = 'Keys and values must be present' }
       end
     elsif @image.save
       respond_to do |format|
@@ -96,10 +96,6 @@ class AnnotatedImagesController < ApplicationController
     end
   end
 
-  def image_valid?
-    allowed_types = ['image/jpeg', 'image/png', 'image/gif']
-    @image.image.content_type.in?(allowed_types)
-  end
-
+  
 
 end

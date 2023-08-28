@@ -26,9 +26,13 @@
           </div>
         </div>
       </div>
+      <div id = "extra-add-button">
+     <button type="button" class="btn btn-sm btn-info add-key-value">Add</button>
+    </div>
       <div class="form-group">
         <%= form.submit "Submit", class: "btn btn-primary" %>
       </div>
+
     <% end %>
   </div>
   <script>
@@ -43,5 +47,6 @@
           annotationSection.hide();
         }
       });
+    
     });
   </script>

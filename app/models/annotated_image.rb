@@ -8,4 +8,10 @@ class AnnotatedImage < ApplicationRecord
     end
     true
   end
+  
+  def self.image_valid? (image)
+    allowed_types = ['image/jpeg', 'image/png', 'image/gif']
+    image.image.content_type.in?(allowed_types)
+  end
+
 end
