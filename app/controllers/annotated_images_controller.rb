@@ -1,22 +1,16 @@
 class AnnotatedImagesController < ApplicationController
-  before_action :set_image, only: %i[edit update show destroy update_annotation]
+  before_action :set_image, only: %i[edit update show destroy update_annotation edit_annotation]
   before_action :set_prev_and_next_image, only: [:show]
 
   def index
-    @annotated_images = AnnotatedImage.paginate(page: params[:page], per_page: 10)
+    @annotated_images = AnnotatedImage.all
   end
 
   def create
     @image = AnnotatedImage.new(image_params)
     @image.annotations = set_annotation
-    if !@image.image.attached?
-      flash[:alert] = 'image is not attached'
-      redirect_to new_annotated_image_path
-    elsif !AnnotatedImage.image_valid? @image
-      flash[:alert] = 'Only image files (jpg, jpeg, png, gif) are allowed'
-      redirect_to new_annotated_image_path
-    elsif !AnnotatedImage.valid_annotations? @image.annotations
-      flash[:alert] = 'annotations are not valid'
+
+    if handle_errors
       redirect_to new_annotated_image_path
     elsif @image.save
       redirect_to annotated_images_path, notice: 'Image was successfully uploaded.'
@@ -25,17 +19,12 @@ class AnnotatedImagesController < ApplicationController
       render :new
     end
   end
-  
-
-  def show; end
-
-  def edit; end
 
   def update
     @image.annotations = set_annotation
     @image.image = params[:image] if params[:image]
-    if !valid_annotations? @image.annotations
-      flash[:alert] = 'annotations are not valid'
+
+    if handle_errors
       redirect_to edit_annotated_image_path(@image)
     elsif @image.update(image_params)
       flash[:notice] = 'image is updated successfully.'
@@ -44,11 +33,6 @@ class AnnotatedImagesController < ApplicationController
       flash[:alert] = 'not updated'
       redirect_to edit_annotated_image_path(@image)
     end
-  end
-
-  def destroy
-    @image.destroy
-    redirect_to annotated_images_path
   end
 
   def update_annotation
@@ -68,17 +52,45 @@ class AnnotatedImagesController < ApplicationController
     end
   end
 
+  def destroy
+    @image.destroy
+    redirect_to annotated_images_path
+  end
+
+  def edit_annotation; end
+
+  def show; end
+
+  def edit; end
+
   private
+
+  def handle_errors
+    if @image.name.empty?
+      flash[:alert] = 'Image name cannot be empty'
+      return true
+    end
+
+    unless @image.image.attached?
+      flash[:alert] = 'Image is not attached'
+      return true
+    end
+
+    unless AnnotatedImage.image_valid?(@image)
+      flash[:alert] = 'Only image files (jpg, jpeg, png, gif) are allowed'
+      return true
+    end
+
+    unless AnnotatedImage.valid_annotations?(@image.annotations)
+      flash[:alert] = 'Keys and values must be present'
+      return true
+    end
+
+    false
+  end
 
   def image_params
     params.permit(:name, :image)
-  end
-
-  def set_prev_and_next_image
-    @prev_image = AnnotatedImage.where('id < ?', @image.id).last
-    @prev_image ||= AnnotatedImage.last
-    @next_image = AnnotatedImage.where('id > ?', @image.id).first
-    @next_image ||= AnnotatedImage.first
   end
 
   def set_image
@@ -91,11 +103,7 @@ class AnnotatedImagesController < ApplicationController
       custom_values = params[:custom_values]
       custom_keys.zip(custom_values).to_h
     else
-      annotations = {}
-      annotations
+      {}.to_h
     end
   end
-
-  
-
 end

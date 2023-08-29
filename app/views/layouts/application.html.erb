@@ -5,10 +5,13 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-
-<%= javascript_pack_tag 'custom' %>
-<%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
 <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+<%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+<%= javascript_pack_tag 'annotations' %>
+<%= javascript_pack_tag 'index' %>
+<%= javascript_pack_tag 'new' %>
+
+
 
   </head>
 

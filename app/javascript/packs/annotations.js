@@ -1,9 +1,7 @@
 $(document).ready(function () {
 
+  toggleAddButtonVisibility()
 
-  $(document).on('click', "#save-keys", function(){
-    $('#annotateModal').modal('hide');
-  })
   function toggleAddButtonVisibility() {
     var keyValuePairElements = $('.key-value-pair');
     var addButton = $('#extra-add-button');
@@ -32,7 +30,7 @@ $(document).ready(function () {
     </div>
   </div>
 `;
- $('#extra-add-button button').click(function () {
+ $(document).on("click", "#extra-add-button button", function () {
   if ($('.key-value-pair').length === 0) {
     $('.key-value-pairs').append(keyValueTemplate);
     toggleAddButtonVisibility()
@@ -41,15 +39,14 @@ $(document).ready(function () {
 
   $(document).on("click", ".add-key-value", function () {
     var canAdd = true;
-
     $(".key-value-pair").each(function () {
       var keyInput = $(this).find(".key");
       var valueInput = $(this).find(".value");
-
+     
       if (keyInput.val() === "" || valueInput.val() === "") {
         canAdd = false;
         return false; 
-      }
+      } 
     });
 
     if (canAdd) {
@@ -68,4 +65,5 @@ $(document).ready(function () {
     toggleAddButtonVisibility()
   });
 
-});
+
+})
