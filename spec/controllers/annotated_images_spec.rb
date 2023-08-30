@@ -11,21 +11,24 @@ RSpec.describe AnnotatedImagesController, type: :controller do
   describe 'POST #create' do
     it 'redirects to the index page on success' do
       post :create, params: { name: 'Sample', image: fixture_file_upload('sample.jpg', 'image/jpeg') }
+      expect(flash[:notice]).to eq('Image was successfully uploaded.')
       expect(response).to redirect_to(annotated_images_path)
     end
 
-    it 'renders the new template if image name is empty' do
-      post :create, params: { name: '', image: nil }
+    it 'renders the new template and show alert message if image name is empty' do
+      post :create, params: { name: '', image: fixture_file_upload('sample.jpg', 'image/jpeg') }
       expect(flash[:alert]).to eq('Image name cannot be empty')
       expect(response).to render_template(:new)
     end
 
     it 'renders the new template if image is not attached' do
       post :create, params: { name: 'image-name', image: nil }
+      expect(flash[:alert]).to eq('Image is not attached')
       expect(response).to render_template(:new)
     end
     it 'renders the new template if image attached is not supported' do
       post :create, params: { name: 'image-name', image: fixture_file_upload('sample.pdf') }
+      expect(flash[:alert]).to eq('Only image files (jpg, jpeg, png, gif) are allowed')
       expect(response).to render_template(:new)
     end
 
@@ -40,6 +43,7 @@ RSpec.describe AnnotatedImagesController, type: :controller do
       post :create,
            params: { name: 'image-name', image: fixture_file_upload('sample.jpg'), custom_keys: ['k1', ''],
                      custom_values: %w[v1 v2] }
+      expect(flash[:alert]).to eq('Keys and values must be present')
       expect(response).to render_template(:new)
     end
 
@@ -47,16 +51,19 @@ RSpec.describe AnnotatedImagesController, type: :controller do
       post :create,
            params: { name: 'image-name', image: fixture_file_upload('sample.jpg'), custom_keys: %w[key1 key2 key3 key4 key5 key6 key7 key8 key9 key10 key11],
                      custom_values: %w[value1 value2 value3 value4 value5 value6 value7 value8 value9 value10 value11] }
+      expect(flash[:alert]).to eq('annotations must be less than 10')
       expect(response).to render_template(:new)
     end
+
     it 'renders the new template with invalid annotation' do
       post :create,
            params: { name: 'image-name', image: fixture_file_upload('sample.jpg'), custom_keys: ['k1', ''],
                      custom_values: ['k1', ''] }
+      expect(flash[:alert]).to eq('Keys and values must be present')
       expect(response).to render_template(:new)
     end
 
-    it 'failed to save image ' do
+    it 'renders the new template if failed to save image ' do
       allow_any_instance_of(AnnotatedImage).to receive(:save).and_return(false)
       post :create,
            params: { name: 'image-name', image: fixture_file_upload('sample.jpg') }
@@ -75,6 +82,14 @@ RSpec.describe AnnotatedImagesController, type: :controller do
       patch :update,
             params: { id: annotated_image.id, name: 'Sample-image',
                       image: fixture_file_upload('sample.jpg', 'image/jpeg') }
+      flash[:notice] = 'image is updated successfully.'
+      expect(response).to redirect_to(annotated_images_path)
+    end
+
+    it 'redirects to the index page on success even if image is not present in params' do
+      patch :update,
+            params: { id: annotated_image.id, name: 'Sample-image' }
+      flash[:notice] = 'image is updated successfully.'
       expect(response).to redirect_to(annotated_images_path)
     end
 
@@ -82,6 +97,7 @@ RSpec.describe AnnotatedImagesController, type: :controller do
       patch :update,
             params: { id: annotated_image.id, name: 'Sample-image', image: fixture_file_upload('sample.jpg', 'image/jpeg'),
                       custom_keys: [''], custom_values: ['v1'] }
+      expect(flash[:alert]).to eq('Keys and values must be present')
       expect(response).to render_template(:edit)
     end
   end
@@ -97,11 +113,8 @@ RSpec.describe AnnotatedImagesController, type: :controller do
         post :update_annotation, params: { id: annotated_image.id }, format: :js
       end
 
-      it 'sets flash notice message' do
+      it 'renders the update_annotation.js.erb template and sets flash notice message' do
         expect(flash[:notice]).to eq('Annotations updated successfully.')
-      end
-
-      it 'renders the update_annotation.js.erb template' do
         expect(response).to render_template('update_annotation')
       end
     end
@@ -112,13 +125,9 @@ RSpec.describe AnnotatedImagesController, type: :controller do
         post :update_annotation, params: { id: annotated_image.id }, format: :js
       end
 
-      it 'sets flash alert message' do
+      it 'renders the update_annotation.js.erb template and sets flash alert message' do
         post :update_annotation, params: { id: annotated_image.id }, format: :js
         expect(flash[:alert]).to eq('Keys and values must be present')
-      end
-
-      it 'renders the update_annotation.js.erb template' do
-        post :update_annotation, params: { id: annotated_image.id }, format: :js
         expect(response).to render_template('update_annotation')
       end
     end
@@ -130,13 +139,9 @@ RSpec.describe AnnotatedImagesController, type: :controller do
     end
 
     context 'when image is successfully destroyed' do
-      it 'redirects to annotated_images_path' do
+      it 'redirects to annotated_images_path and sets flash notice message' do
         delete :destroy, params: { id: annotated_image.id }
         expect(response).to redirect_to(annotated_images_path)
-      end
-
-      it 'sets flash notice message' do
-        delete :destroy, params: { id: annotated_image.id }
         expect(flash[:notice]).to eq('Image was successfully deleted.')
       end
     end
@@ -146,14 +151,10 @@ RSpec.describe AnnotatedImagesController, type: :controller do
         allow_any_instance_of(AnnotatedImage).to receive(:destroy).and_return(false)
       end
 
-      it 'renders index template' do
-        delete :destroy, params: { id: annotated_image.id }
-        expect(response).to render_template(:index)
-      end
-
-      it 'sets flash alert message' do
+      it 'renders index template and ' do
         delete :destroy, params: { id: annotated_image.id }
         expect(flash[:alert]).to eq('Failed to delete image')
+        expect(response).to render_template(:index)
       end
     end
   end
