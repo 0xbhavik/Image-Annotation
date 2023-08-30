@@ -16,6 +16,7 @@ RSpec.describe AnnotatedImagesController, type: :controller do
 
     it 'renders the new template if image name is empty' do
       post :create, params: { name: '', image: nil }
+      expect(flash[:alert]).to eq('Image name cannot be empty')
       expect(response).to render_template(:new)
     end
 
