@@ -1,6 +1,7 @@
 class AnnotatedImage < ApplicationRecord
   has_one_attached :image, dependent: :destroy
   validates :name, presence: true
+  validates :image, presence: true
 
   def self.valid_annotations?(annotations)
     annotations.each do |key, value|

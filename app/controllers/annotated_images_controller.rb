@@ -9,9 +9,9 @@ class AnnotatedImagesController < ApplicationController
   def create
     @image = AnnotatedImage.new(image_params)
     @image.annotations = set_annotation
-
+    @image.image = params[:image] if params[:image].present?
     if handle_errors
-      redirect_to new_annotated_image_path
+      render :new
     elsif @image.save
       redirect_to annotated_images_path, notice: 'Image was successfully uploaded.'
     else
@@ -22,16 +22,17 @@ class AnnotatedImagesController < ApplicationController
 
   def update
     @image.annotations = set_annotation
-    @image.image = params[:image] if params[:image]
-
+    @image.image = params[:image] if params[:image].present?
+    
     if handle_errors
-      redirect_to edit_annotated_image_path(@image)
+      render :edit
     elsif @image.update(image_params)
       flash[:notice] = 'image is updated successfully.'
       redirect_to annotated_images_path
     else
       flash[:alert] = 'not updated'
-      redirect_to edit_annotated_image_path(@image)
+      render :edit
+      # redirect_to edit_annotated_image_path(@image)
     end
   end
 
@@ -71,11 +72,15 @@ class AnnotatedImagesController < ApplicationController
       return true
     end
 
-    unless @image.image.attached?
+    if @image.image.nil?
       flash[:alert] = 'Image is not attached'
       return true
     end
 
+    unless @image.image.attached?
+      flash[:alert] = 'Image is not attached'
+      return true
+    end
     unless AnnotatedImage.image_valid?(@image)
       flash[:alert] = 'Only image files (jpg, jpeg, png, gif) are allowed'
       return true
@@ -90,7 +95,7 @@ class AnnotatedImagesController < ApplicationController
   end
 
   def image_params
-    params.permit(:name, :image)
+    params.permit(:name)
   end
 
   def set_image
