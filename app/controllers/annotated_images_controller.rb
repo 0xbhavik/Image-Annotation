@@ -23,16 +23,13 @@ class AnnotatedImagesController < ApplicationController
   def update
     @image.annotations = set_annotation
     @image.image = params[:image] if params[:image].present?
-    
+
     if handle_errors
       render :edit
-    elsif @image.update(image_params)
+    else
+      @image.update(image_params)
       flash[:notice] = 'image is updated successfully.'
       redirect_to annotated_images_path
-    else
-      flash[:alert] = 'not updated'
-      render :edit
-      # redirect_to edit_annotated_image_path(@image)
     end
   end
 
@@ -42,20 +39,21 @@ class AnnotatedImagesController < ApplicationController
       respond_to do |format|
         format.js { flash.now[:alert] = 'Keys and values must be present' }
       end
-    elsif @image.save
+    else
+      @image.save
       respond_to do |format|
         format.js { flash.now[:notice] = 'Annotations updated successfully.' }
-      end
-    else
-      respond_to do |format|
-        format.js { flash.now[:alert] = 'Failed to update annotations.' }
       end
     end
   end
 
   def destroy
-    @image.destroy
-    redirect_to annotated_images_path
+    if @image.destroy
+      redirect_to annotated_images_path, notice: 'Image was successfully deleted.'
+    else
+      render :index
+      flash[:alert] = 'Failed to delete image'
+    end
   end
 
   def edit_annotation; end
@@ -72,11 +70,6 @@ class AnnotatedImagesController < ApplicationController
       return true
     end
 
-    if @image.image.nil?
-      flash[:alert] = 'Image is not attached'
-      return true
-    end
-
     unless @image.image.attached?
       flash[:alert] = 'Image is not attached'
       return true
@@ -85,7 +78,10 @@ class AnnotatedImagesController < ApplicationController
       flash[:alert] = 'Only image files (jpg, jpeg, png, gif) are allowed'
       return true
     end
-
+    if @image.annotations.count > 10
+      flash[:alert] = 'annotations must be less than 10'
+      return true
+    end
     unless AnnotatedImage.valid_annotations?(@image.annotations)
       flash[:alert] = 'Keys and values must be present'
       return true
