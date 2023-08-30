@@ -121,6 +121,11 @@
         1,
         null
       ],
+      "/Users/inito/Desktop/img-annotations/app/controllers/welcome_controller.rb": [
+        1,
+        1,
+        null
+      ],
       "/Users/inito/Desktop/img-annotations/app/models/annotated_image.rb": [
         1,
         1,
@@ -161,11 +166,6 @@
         null,
         0
       ],
-      "/Users/inito/Desktop/img-annotations/app/controllers/welcome_controller.rb": [
-        0,
-        0,
-        0
-      ],
       "/Users/inito/Desktop/img-annotations/app/channels/application_cable/connection.rb": [
         0,
         0,
@@ -179,6 +179,6 @@
         0
       ]
     },
-    "timestamp": 1693382685
+    "timestamp": 1693382883
   }
 }
