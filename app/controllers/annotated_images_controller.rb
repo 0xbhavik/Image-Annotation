@@ -10,7 +10,6 @@ class AnnotatedImagesController < ApplicationController
   def create
     image_service = ImageService.new(permitted_params)
     image_service.create_image
-    
     if image_service.response.present?
       redirect_to annotated_images_path, notice: image_service.response
     else
