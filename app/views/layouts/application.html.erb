@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ImgAnnotations</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+<%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+<%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+<%= javascript_pack_tag 'annotations' %>
+<%= javascript_pack_tag 'index' %>
+<%= javascript_pack_tag 'new' %>
+<%= javascript_pack_tag 'edit' %>
+
+
+  </head>
+
+  <body>
+    <%= render 'layouts/messages' %>
+    <%= yield %>
+  </body>
+</html>
