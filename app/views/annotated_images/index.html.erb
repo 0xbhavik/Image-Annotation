@@ -1,4 +1,7 @@
-<div class="text-align-center container justify-content-center"> <%= will_paginate @annotated_images %></div>
+<div class="apple_pagination">
+ 
+  <%= will_paginate @annotated_images, :container => false %>
+</div>
 <div class="container text-center mt-4">
   <div class="row">
     <div class="col-md-12 text-left">
