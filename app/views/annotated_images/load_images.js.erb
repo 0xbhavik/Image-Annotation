@@ -1,0 +1,13 @@
+<% @next_images.each do |image| %>
+  $('#imageCarousel .carousel-inner').append(`
+  <div class="carousel-item">
+    <img class="image d-block w-90" id="previewImage" src="<%= url_for(image.image) %>"  alt="Image">
+    <div class="d-flex justify-content-center mt-2 annotate-div-class">
+      <button type="button" class="btn btn-info annotate-image-button" style="margin: 10px;"  data-toggle="modal" data-target="#annotateModal" data-image-id="<%= image.id %>">
+        Annotate
+      </button>
+    </div>
+  </div>
+  `);
+
+<% end %>
