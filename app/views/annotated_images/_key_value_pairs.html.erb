@@ -1,0 +1,42 @@
+  
+<div class="key-value-pairs" >
+  <% if @image.annotations.empty?%>
+    <div class="key-value-pair form-row">
+      <div class="col">
+        <%= form.text_field "custom_keys[]",  class: "form-control key", placeholder: 'Key' %>
+      </div>
+      <div class="col">
+        <%= form.text_field "custom_values[]",  class: "form-control value", placeholder: 'Value' %>
+      </div>
+      <div class="col-auto">
+        <button type="button" class="btn btn-sm btn-info add-key-value">Add</button>
+      </div>
+      <div class="col-auto">
+        <button type="button" class="btn btn-sm btn-danger remove-key-value">Remove</button>
+      </div>
+    <% end %>
+    <%@image.annotations.each do |key,value| %>
+      <div class="key-value-pair form-row">
+        <div class="col">
+          <%= form.text_field "custom_keys[]", value: key, class: "form-control key", placeholder: 'Key' %>
+        </div>
+        <div class="col">
+          <%= form.text_field "custom_values[]", value: value , class: "form-control value", placeholder: 'Value' %>
+        </div>
+        <div class="col-auto">
+          <button type="button" class="btn btn-sm btn-info add-key-value">Add</button>
+        </div>
+        <div class="col-auto">
+          <button type="button" class="btn btn-sm btn-danger remove-key-value">Remove</button>
+        </div>
+      </div>
+    <% end %>
+      
+
+     
+  </div>
+     <div id = "extra-add-button">
+     <button type="button" class="btn btn-sm btn-info add-key-value">Add</button>
+    </div>
+</div>
+
