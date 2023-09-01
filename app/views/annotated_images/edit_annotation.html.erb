@@ -1,6 +1,9 @@
+<%= form_with(model: @annotated_image,  url: annotated_image_path(@image),method: :patch, id: 'annotate_form',  remote: true ) do |form| %>
+  <%= render partial: 'key_value_pairs', locals: { form: form, image: @image } %>
+  <%= form.submit "Submit", class: "btn btn-primary mt-4", id: "save-keys" %>
+   <button type="button" class="btn btn-secondary mt-4" id="reset-button" data-image-id = "<%= @image.id %>">Reset</button>
+<% end %>
 
-  <%= form_with(model: @annotated_image, url: update_annotation_annotated_image_path(@image),method: :post, id: 'annotate_form',  remote: true ) do |form| %>
-    <%= render partial: 'key_value_pairs', locals: { form: form, image: @image } %>
-      <%= form.submit "Submit", class: "btn btn-primary mt-4", id: "save-keys" %>
-  <% end %>
+
+
 

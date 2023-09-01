@@ -1,3 +1,7 @@
+<div class="apple_pagination">
+ 
+  <%= will_paginate @annotated_images, :container => false %>
+</div>
 <div class="container text-center mt-4">
   <div class="row">
     <div class="col-md-12 text-left">
@@ -17,7 +21,7 @@
             </div>
             <div class="col-md-6 text-right">
               <%= link_to 'Edit', edit_annotated_image_path(annotated_image), class: "btn btn-primary mr-2" ,data: { turbolinks: false} %>
-              <%= link_to 'Delete', annotated_image_path(annotated_image), method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger" , data: { turbolinks: false} %>
+              <%= link_to 'Delete', annotated_image_path(annotated_image), method: :delete, data: { confirm: 'Are you sure?', turbolinks: false }, class: "btn btn-danger"  %>
             </div>
           </div>
         <%end%>
@@ -29,7 +33,7 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-body">
-        <div id="imageCarousel" class="carousel slide">
+        <div id="imageCarousel" class="carousel">
           <div class="carousel-inner">
             <% @annotated_images.each_with_index do |image, index| %>
               <div class="carousel-item <%= index == 0 ? 'active' : '' %>" data-image-id="<%= image.id %>">
@@ -70,3 +74,29 @@
       </div>
     </div>
   </div>
+  <script>
+  
+    $(document).ready(function() {
+      let currentPage = 1;
+      const nextButton = $('#imageCarousel .carousel-control-next');
+       nextButton.click(function(event) {
+        const carousel = $('#imageCarousel');
+        const activeItem = carousel.find('.carousel-item.active');
+        const isLastItem = activeItem.is(':last-child');
+        
+        if (isLastItem) {
+          $.ajax({
+            url: '/annotated_images/load_images',
+            data: { page: currentPage + 1 },
+            dataType: 'script',
+            async: false, 
+            success: function() {
+                  currentPage++;
+                  console.log("success")
+                  
+            },
+          });
+        }
+      });
+    });
+  </script>

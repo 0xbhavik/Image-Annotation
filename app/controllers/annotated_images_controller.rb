@@ -1,110 +1,73 @@
+require_relative '../services/image_service'
+
 class AnnotatedImagesController < ApplicationController
-  before_action :set_image, only: %i[edit update show destroy update_annotation edit_annotation]
-  before_action :set_prev_and_next_image, only: [:show]
+  before_action :set_image, only: %i[edit update destroy update_annotation edit_annotation]
 
   def index
-    @annotated_images = AnnotatedImage.all
+    @annotated_images = AnnotatedImage.paginate(page: params[:page], per_page: 2)
   end
 
   def create
-    @image = AnnotatedImage.new(image_params)
-    @image.annotations = set_annotation
-    @image.image = params[:image] if params[:image].present?
-    if handle_errors
-      render :new
-    elsif @image.save
-      redirect_to annotated_images_path, notice: 'Image was successfully uploaded.'
+    image_service = ImageService.new(permitted_params)
+    image_service.create_image
+    
+    if image_service.response.present?
+      redirect_to annotated_images_path, notice: image_service.response
     else
-      flash[:alert] = 'Failed to save image'
+      flash[:alert] = image_service.errors.join('<br/>').html_safe
       render :new
     end
   end
 
   def update
-    @image.annotations = set_annotation
-    @image.image = params[:image] if params[:image].present?
-
-    if handle_errors
-      render :edit
-    else
-      @image.update(image_params)
-      flash[:notice] = 'image is updated successfully.'
-      redirect_to annotated_images_path
-    end
-  end
-
-  def update_annotation
-    @image.annotations = set_annotation
-    if !AnnotatedImage.valid_annotations? @image.annotations
+    image_service = ImageService.new(permitted_params, @image)
+    image_service.update_image
+    if image_service.response.present?
       respond_to do |format|
-        format.js { flash.now[:alert] = 'Keys and values must be present' }
+        format.js { flash.now[:notice] = image_service.response }
+        format.html { redirect_to annotated_images_path, notice: image_service.response }
       end
     else
-      @image.save
       respond_to do |format|
-        format.js { flash.now[:notice] = 'Annotations updated successfully.' }
+        format.js { flash[:alert] = image_service.errors.join('<br/>').html_safe }
+        format.html do 
+          flash[:alert] = image_service.errors.join('<br/>').html_safe 
+          render :edit
+        end
       end
     end
   end
 
   def destroy
-    if @image.destroy
-      redirect_to annotated_images_path, notice: 'Image was successfully deleted.'
+    image_service = ImageService.new(nil, @image)
+    image_service.delete_image
+
+    if image_service.response.present?
+      redirect_to annotated_images_path, notice: image_service.response
     else
+      flash[:alert] = image_service.errors.join('<br/>').html_safe
       render :index
-      flash[:alert] = 'Failed to delete image'
     end
   end
 
   def edit_annotation; end
 
-  def show; end
-
   def edit; end
 
+  def load_images
+    @next_images = AnnotatedImage.paginate(page: params[:page], per_page: 2)
+    respond_to do |format|
+      format.js
+    end
+  end
+
   private
-
-  def handle_errors
-    if @image.name.empty?
-      flash[:alert] = 'Image name cannot be empty'
-      return true
-    end
-
-    unless @image.image.attached?
-      flash[:alert] = 'Image is not attached'
-      return true
-    end
-    unless AnnotatedImage.image_valid?(@image)
-      flash[:alert] = 'Only image files (jpg, jpeg, png, gif) are allowed'
-      return true
-    end
-    if @image.annotations.count > 10
-      flash[:alert] = 'annotations must be less than 10'
-      return true
-    end
-    unless AnnotatedImage.valid_annotations?(@image.annotations)
-      flash[:alert] = 'Keys and values must be present'
-      return true
-    end
-
-    false
-  end
-
-  def image_params
-    params.permit(:name)
-  end
 
   def set_image
     @image = AnnotatedImage.find(params[:id])
   end
 
-  def set_annotation
-    if params[:custom_keys] && params[:custom_values] && !params[:custom_keys].empty?
-      custom_keys = params[:custom_keys]
-      custom_values = params[:custom_values]
-      custom_keys.zip(custom_values).to_h
-    else
-      {}.to_h
-    end
+  def permitted_params
+    params.permit(:name, :image, custom_keys: [], custom_values: [])
   end
 end

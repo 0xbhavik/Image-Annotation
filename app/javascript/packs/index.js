@@ -21,4 +21,20 @@ $(document).ready(function() {
          }
        });
      });
+
+     $('#reset-button').click(function(){
+      const imageId = $(this).data('image-id');
+      console.log("reset-clicked")
+      $.ajax({
+        url: '/annotated_images/' + imageId + '/edit_annotation',
+        method: 'GET',
+        dataType: 'html',
+        success: function(formHtml) {
+          console.log("inside ajax")
+          $('#annotateModal .modal-body').html(formHtml);
+          $('#annotateModal').modal('show');
+        }
+      });
+     })
+ 
    });
