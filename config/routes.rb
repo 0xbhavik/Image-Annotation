@@ -4,6 +4,9 @@ Rails.application.routes.draw do
       post 'update_annotation'
       get 'edit_annotation'
     end
+    collection do
+      get 'load_images'
+    end
   end
   root 'welcome#home'
 end
